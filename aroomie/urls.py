@@ -25,7 +25,12 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
 
-    # Facebook API
+    # APIs
+
+    # Facebook
     url(r'^api/social/', include('rest_framework_social_oauth2.urls')),
-    
+
+    # User
+    # url(r'^api/user/profile)
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
