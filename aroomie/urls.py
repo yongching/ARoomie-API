@@ -15,22 +15,39 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from aroomieapp import views
+from aroomieapp import views, apis
 
 # To use images uploaded, we need this
 from django.conf.urls.static import static
 from django.conf import settings
 
+from aroomieapp.apis import PostAdvertisement, PutAdvertisement
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
 
-    # APIs
-
     # Facebook
     url(r'^api/social/', include('rest_framework_social_oauth2.urls')),
 
-    # User
-    # url(r'^api/user/profile)
+    # USER
+    url(r'^api/user/profile/$', apis.user_get_profile),
+    url(r'^api/user/profile/edit/$', apis.user_update_profile),
+    url(r'^api/user/profile/other/(?P<user_id>\d+)/$', apis.user_get_other_profile),
+
+    # ADVERTISEMENT
+    url(r'^api/advertisements/$', apis.user_get_advertisements),
+    url(r'^api/advertisement/add/$', PostAdvertisement.as_view()),
+    url(r'^api/advertisement/add/$', PutAdvertisement.as_view()),
+    # url(r'^api/advertisement/edit/(?P<advertisement_id>\d+)/$', apis.user_update_advertisement),
+
+    # RATING
+    url(r'^api/rating/(?P<user_id>\d+)/$', apis.user_get_rating),
+    url(r'^api/rating/add/(?P<user_id>\d+)/$', apis.user_add_rating),
+
+    # MESSAGE
+    url(r'^api/messages/$', apis.user_get_message_list),
+    url(r'^api/message/(?P<user_id>\d+)/$', apis.user_get_message_thread),
+    url(r'^api/message/send/(?P<user_id>\d+)$', apis.user_send_message),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
