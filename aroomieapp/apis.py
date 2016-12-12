@@ -52,7 +52,7 @@ def user_get_profile(request):
 """
 @csrf_exempt
 def user_update_profile(request):
-
+    print(settings.MEDIA_ROOT)
     if request.method == "POST":
         access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
             expires__gt = timezone.now())
@@ -103,7 +103,7 @@ def user_get_other_profile(request, user_id):
 """
 class AdvertisementList(APIView):
     serializer_class = AdvertisementSerializer
-    
+
     def get(self, request, format=None):
         advertisements = Advertisement.objects.all().order_by('-id')
         serializer = AdvertisementSerializer(advertisements, many=True, context = {"request": request})
