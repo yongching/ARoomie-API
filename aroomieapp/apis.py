@@ -3,6 +3,7 @@ import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.http import Http404
 
 from oauth2_provider.models import AccessToken
 
@@ -83,17 +84,8 @@ def user_get_other_profile(request, user_id):
     return JsonResponse({"basic": basic, "profile": profile})
 
 ###############
-# ADVERTISEMENT
+# ADVERTISEMENT - Trying Class-based Views
 ###############
-
-def user_get_advertisements(request):
-    advertisements = AdvertisementSerializer(
-        Advertisement.objects.all().order_by('-id'),
-        many = True,
-        context = {"request": request}
-    ).data
-
-    return JsonResponse({"advertisements": advertisements})
 
 """
     POST params:
@@ -109,8 +101,13 @@ def user_get_advertisements(request):
         race_pref
         photo
 """
-class PostAdvertisement(APIView):
+class AdvertisementList(APIView):
     serializer_class = AdvertisementSerializer
+
+    def get(self, request, format=None):
+        advertisements = Advertisement.objects.all().order_by('-id')
+        serializer = AdvertisementSerializer(advertisements, many=True, context = {"request": request})
+        return Response(serializer.data)
 
     def post(self, request, format=None):
         serializer = AdvertisementSerializer(data=request.data)
@@ -122,14 +119,22 @@ class PostAdvertisement(APIView):
             user = access_token.user
             serializer.save(created_by=user)
             return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors)
+class AdvertisementDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Advertisement.objects.get(pk=pk)
+        except Advertisement.DoesNotExist:
+            raise Http404
 
-class PutAdvertisement(APIView):
-
-    def put(self, request, format=None):
-        return Response(serializer.data)
-
+    def put(self, request, pk, format=None):
+        advertisement = self.get_object(pk)
+        serializer = AdvertisementSerializer(advertisement, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ###############
 # RATING
