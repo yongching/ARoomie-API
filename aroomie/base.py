@@ -136,7 +136,6 @@ AUTHENTICATION_BACKENDS = (
     # Others auth providers (e.g. Google, OpenId, etc)
 
     # Facebook OAuth2
-    'social.backends.facebook.FacebookAppOAuth2',
     'social.backends.facebook.FacebookOAuth2',
 
     # django-rest-framework-social-oauth2

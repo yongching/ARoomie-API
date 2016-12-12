@@ -103,7 +103,7 @@ def user_get_other_profile(request, user_id):
 """
 class AdvertisementList(APIView):
     serializer_class = AdvertisementSerializer
-
+    
     def get(self, request, format=None):
         advertisements = Advertisement.objects.all().order_by('-id')
         serializer = AdvertisementSerializer(advertisements, many=True, context = {"request": request})
