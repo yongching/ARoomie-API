@@ -12,7 +12,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("id", "dob", "gender", "race", "phone", "avatar", "lifestyle_info",
+        fields = ("id", "age_min", "age_max", "gender", "race", "phone", "avatar", "lifestyle_info",
             "gender_pref", "race_pref", "budget_pref", "move_in_pref")
 
 class OtherProfileSerializer(serializers.ModelSerializer):

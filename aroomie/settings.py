@@ -159,7 +159,7 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = [
     # 'user_birthday',
 ]
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-    'fields': 'id, name, email, gender'
+    'fields': 'id, name, email, age_range, gender'
 }
 
 # Login process customization purpose
