@@ -28,6 +28,19 @@ def user_get_profile(request):
 
     user = access_token.user
 
+    p = Profile.objects.get(user = user)
+    age_min = p.age_min
+    age_max = p.age_max
+
+    if age_min != 0 and age_max != 0:
+        age_range = str(age_min) + " - " + str(age_max)
+    elif age_min == 0 and age_max != 0:
+        age_range = "below " + str(age_max)
+    elif age_min != 0 and age_max == 0:
+        age_range = "above " + str(age_min)
+    else:
+        age_range == ""
+
     basic = UserSerializer(
         User.objects.filter(id = user.id).last()
     ).data
@@ -36,7 +49,7 @@ def user_get_profile(request):
         Profile.objects.filter(user = user).last()
     ).data
 
-    return JsonResponse({"basic": basic, "profile": profile})
+    return JsonResponse({"basic": basic, "profile": profile, "age_range": age_range})
 
 """
     POST params:
