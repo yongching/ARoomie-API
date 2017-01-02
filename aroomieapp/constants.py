@@ -1,11 +1,11 @@
 # Constant for integer values
-MALE = 1
-FEMALE = 2
+MALE = 0
+FEMALE = 1
 
+MALAY = 0
 CHINESE = 1
-MALAY = 2
-INDIAN = 3
-OTHERS = 4
+INDIAN = 2
+OTHERS = 3
 
 GENDER_CHOICES = (
     (MALE, "Male"),
