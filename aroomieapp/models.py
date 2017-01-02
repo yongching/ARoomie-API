@@ -7,7 +7,6 @@ from aroomieapp.constants import *
 class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    # dob = models.DateField(blank=True, null=True)
     age_min = models.IntegerField(blank=True, null=True)
     age_max = models.IntegerField(blank=True, null=True)
     gender = models.CharField(max_length=6)

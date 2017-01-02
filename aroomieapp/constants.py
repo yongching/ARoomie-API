@@ -13,8 +13,8 @@ GENDER_CHOICES = (
 )
 
 RACE_CHOICES = (
-    (CHINESE, "Chinese"),
     (MALAY, "Malay"),
+    (CHINESE, "Chinese"),
     (INDIAN, "Indian"),
     (OTHERS, "Others"),
 )

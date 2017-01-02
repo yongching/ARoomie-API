@@ -73,7 +73,7 @@ def user_update_profile(request):
         user = access_token.user
 
         profile = Profile.objects.get(user = user)
-        profile.dob = request.POST["dob"]
+        #profile.dob = request.POST["dob"]
         profile.race = request.POST["race"]
         profile.phone = request.POST["phone"]
         profile.lifestyle_info = request.POST["lifestyle_info"]
