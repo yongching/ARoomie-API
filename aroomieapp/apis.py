@@ -65,7 +65,7 @@ def user_get_profile(request):
 """
 @csrf_exempt
 def user_update_profile(request):
-    print(settings.MEDIA_ROOT)
+
     if request.method == "POST":
         access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
             expires__gt = timezone.now())
@@ -73,14 +73,28 @@ def user_update_profile(request):
         user = access_token.user
 
         profile = Profile.objects.get(user = user)
-        #profile.dob = request.POST["dob"]
-        profile.race = request.POST["race"]
-        profile.phone = request.POST["phone"]
-        profile.lifestyle_info = request.POST["lifestyle_info"]
-        profile.gender_pref = request.POST["gender_pref"]
-        profile.race_pref = request.POST["race_pref"]
-        profile.budget_pref = request.POST["budget_pref"]
-        profile.move_in_pref = request.POST["move_in_pref"]
+
+        if request.POST["race"]:
+            profile.race = request.POST["race"]
+
+        if request.POST["phone"]:
+            profile.phone = request.POST["phone"]
+
+        if request.POST["lifestyle_info"]:
+            profile.lifestyle_info = request.POST["lifestyle_info"]
+
+        if request.POST["gender_pref"]:
+            profile.gender_pref = request.POST["gender_pref"]
+
+        if request.POST["race_pref"]:
+            profile.race_pref = request.POST["race_pref"]
+
+        if request.POST["budget_pref"]:
+            profile.budget_pref = request.POST["budget_pref"]
+
+        if request.POST["move_in_pref"]:
+            profile.move_in_pref = request.POST["move_in_pref"]
+
         profile.save()
 
         return JsonResponse({"status": "success"})
