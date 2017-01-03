@@ -24,6 +24,7 @@ class Profile(models.Model):
 
 class Advertisement(models.Model):
 
+    place_name = models.CharField(max_length=500, blank=True)
     rental = models.IntegerField(default=0)
     move_in = models.DateField()
     deposit = models.IntegerField(default=0)

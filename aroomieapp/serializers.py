@@ -31,7 +31,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = ("id", "rental", "move_in", "deposit", "amenity", "rule",
+        fields = ("id", "place_name", "rental", "move_in", "deposit", "amenity", "rule",
             "lat", "lng", "gender_pref", "race_pref", "photo", "created_by")
 
         def create(self, validated_data):
