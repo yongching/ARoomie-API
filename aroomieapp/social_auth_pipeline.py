@@ -2,7 +2,7 @@ from aroomieapp.models import Profile
 
 def extend_user_profile(backend, user, request, response, *args, **kwargs):
     if backend.name == 'facebook':
-        avatar = 'https://graph.facebook.com/%s/picture?type=large' % response['id']
+        avatar = 'https://graph.facebook.com/%s/picture?type=normal' % response['id']
         gender = response['gender']
         age_min = response['age_range']['min'] if response['age_range'].get('min') else 0
         age_max = response['age_range']['max'] if response['age_range'].get('max') else 0
