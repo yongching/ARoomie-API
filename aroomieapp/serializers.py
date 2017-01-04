@@ -19,7 +19,7 @@ class OtherProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("id", "dob", "gender", "race", "phone", "avatar", "lifestyle_info")
+        fields = ("id", "gender", "race", "phone", "avatar", "lifestyle_info")
 
 class AdvertisementSerializer(serializers.ModelSerializer):
     # photo = serializers.SerializerMethodField()

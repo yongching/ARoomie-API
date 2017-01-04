@@ -54,7 +54,6 @@ def user_get_profile(request):
 """
     POST params:
         access_token
-        dob
         race
         phone
         lifestyle_info
