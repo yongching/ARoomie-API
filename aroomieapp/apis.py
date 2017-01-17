@@ -154,6 +154,11 @@ class AdvertisementDetail(APIView):
         except Advertisement.DoesNotExist:
             raise Http404
 
+    def get(self, request, pk, format=None):
+        advertisement = Advertisement.objects.filter(id=pk).last()
+        serializer = AdvertisementSerializer(advertisement, context = {"request": request})
+        return Response(serializer.data)
+
     def put(self, request, pk, format=None):
         advertisement = self.get_object(pk)
         serializer = AdvertisementSerializer(advertisement, data=request.data)
