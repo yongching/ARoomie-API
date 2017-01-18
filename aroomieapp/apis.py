@@ -107,7 +107,20 @@ def user_get_other_profile(request, user_id):
         Profile.objects.filter(user_id = user_id).last()
     ).data
 
-    return JsonResponse({"basic": basic, "profile": profile})
+    p = Profile.objects.filter(user_id = user_id).last()
+    age_min = p.age_min
+    age_max = p.age_max
+
+    if age_min != 0 and age_max != 0:
+        age_range = str(age_min) + " - " + str(age_max)
+    elif age_min == 0 and age_max != 0:
+        age_range = "below " + str(age_max)
+    elif age_min != 0 and age_max == 0:
+        age_range = "above " + str(age_min)
+    else:
+        age_range == ""
+
+    return JsonResponse({"basic": basic, "profile": profile, "age_range": age_range})
 
 ###############
 # ADVERTISEMENT - Trying Class-based Views
