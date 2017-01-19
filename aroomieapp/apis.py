@@ -188,9 +188,11 @@ def user_get_rating(request, user_id):
 
     ratings = Rating.objects.filter(rated_to = user_id)
     count = ratings.count()
-
-    score = sum(rating.score for rating in ratings) / count
-    return JsonResponse({"score": round(score, 0)}) #round off to whole number
+    if count > 0:
+        score = sum(rating.score for rating in ratings) / count
+        return JsonResponse({"score": round(score, 0)}) #round off to whole number
+    else:
+        return JsonResponse({"score": 0})
 
 """
     POST params:
