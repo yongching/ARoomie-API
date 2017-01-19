@@ -49,6 +49,6 @@ urlpatterns = [
     # MESSAGE
     url(r'^api/messages/$', apis.user_get_message_list),
     url(r'^api/message/(?P<user_id>\d+)/$', apis.user_get_message_thread),
-    url(r'^api/message/send/(?P<user_id>\d+)$', apis.user_send_message),
+    url(r'^api/message/send/(?P<user_id>\d+)/$', apis.user_send_message),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
