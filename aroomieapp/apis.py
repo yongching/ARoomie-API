@@ -194,6 +194,16 @@ def user_get_rating(request, user_id):
     else:
         return JsonResponse({"score": 0})
 
+def user_rating_check(request, user_id):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+        expires__gt = timezone.now())
+
+    user = access_token.user
+    ratings = Rating.objects.filter(rated_by = user, rated_to = user_id)
+    if ratings.count() > 0:
+        return JsonResponse({"rated": "true"})
+    else:
+        return JsonResponse({"rated": "false"})
 """
     POST params:
         access_token

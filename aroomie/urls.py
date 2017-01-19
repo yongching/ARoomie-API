@@ -44,6 +44,7 @@ urlpatterns = [
     # RATING
     url(r'^api/rating/(?P<user_id>\d+)/$', apis.user_get_rating),
     url(r'^api/rating/add/(?P<user_id>\d+)/$', apis.user_add_rating),
+    url(r'^api/rating/check/(?P<user_id>\d+)/$', apis.user_rating_check),
 
     # MESSAGE
     url(r'^api/messages/$', apis.user_get_message_list),
