@@ -237,22 +237,42 @@ def user_add_rating(request, user_id):
 # MESSAGE
 ###############
 
+# def user_get_message_list(request):
+#     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+#         expires__gt = timezone.now())
+#
+#     user = access_token.user
+#
+#     message_list = MessageSerializer(
+#         Message.objects.filter(Q(sent_by = user) | Q(sent_to = user)).order_by('sent_at'),
+#         many = True
+#     ).data
+#
+#     for message in message_list:
+#         message["sent_by"] = User.objects.filter(id = message["sent_by"]).last().get_full_name()
+#         message["sent_to"] = User.objects.filter(id = message["sent_to"]).last().get_full_name()
+#
+#     return JsonResponse({"message_list": message_list})
+
 def user_get_message_list(request):
     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
         expires__gt = timezone.now())
 
     user = access_token.user
 
-    message_list = MessageSerializer(
-        Message.objects.filter(Q(sent_by = user) | Q(sent_to = user)).order_by('sent_at'),
-        many = True
-    ).data
+    unique_senders = Message.objects.filter(sent_to = user).values('sent_by', 'sent_to').distinct()
+    message_list = []
+    for id in unique_senders:
+        sent_by = id["sent_by"]
+        message = MessageSerializer(
+            Message.objects.filter(sent_to = user, sent_by = sent_by).order_by('sent_at').last()
+        ).data
+        message_list.append(message)
 
     for message in message_list:
-        message["sent_by"] = User.objects.filter(id = message["sent_by"]).last().get_full_name()
-        message["sent_to"] = User.objects.filter(id = message["sent_to"]).last().get_full_name()
+        message["sent_by_name"] = User.objects.filter(id = message["sent_by"]).last().get_full_name()
 
-    return JsonResponse({"message_list": message_list})
+    return JsonResponse({"messages_received": message_list})
 
 def user_get_message_thread(request, user_id):
     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
