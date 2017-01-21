@@ -260,13 +260,24 @@ def user_get_message_list(request):
 
     user = access_token.user
 
+    # TODO: get the unique senders order_by timestamp
     unique_senders = Message.objects.filter(sent_to = user).values('sent_by', 'sent_to').distinct()
+
     message_list = []
     for id in unique_senders:
+        sent_to = id["sent_to"]
         sent_by = id["sent_by"]
+
+        # Get the latest content for each of the messages
+        latest = MessageSerializer(
+            Message.objects.filter(Q(sent_by = sent_to, sent_to = sent_by) | Q(sent_by = sent_by, sent_to = sent_to)).order_by('sent_at').last()
+        ).data
+
+        # Replace content with last chat and append the message into messsage_list
         message = MessageSerializer(
             Message.objects.filter(sent_to = user, sent_by = sent_by).order_by('sent_at').last()
         ).data
+        message["content"] = latest["content"]
         message_list.append(message)
 
     for message in message_list:
