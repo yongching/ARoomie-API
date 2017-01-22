@@ -130,6 +130,7 @@ def user_get_other_profile(request, user_id):
 ###############
 
 class AdvertisementList(APIView):
+    serializer_class = AdvertisementSerializer
 
     """
         GET params:
@@ -138,29 +139,34 @@ class AdvertisementList(APIView):
             budget
             move_in
     """
+
     def get(self, request, format=None):
 
+        advertisements = Advertisement.objects.all()
+
         # Request.GET data
-        gender_pref = request.GET["gender_pref"]
-        race_pref = request.GET["race_pref"]
-        budget = request.GET["budget"]
-        move_in = request.GET["move_in"]
+        if request.GET["gender_pref"]:
+            gender_pref = request.GET["gender_pref"]
+            advertisements = advertisements.filter(gender_pref=gender_pref)
 
-        # Advanced two months move_in date to create search range
-        start_date = datetime.datetime.strptime(move_in, "%Y-%m-%d").date()
-        end_date = start_date + relativedelta(months=2)
+        if request.GET["race_pref"]:
+            race_pref = request.GET["race_pref"]
+            advertisements = advertisements.filter(race_pref=race_pref)
 
-        advertisements = AdvertisementSerializer(
-            Advertisement.objects.filter(
-                gender_pref=gender_pref,
-                race_pref=race_pref,
-                rental__lte=budget,
-                move_in__range=(start_date, end_date)
-            ),
-            many=True,
-            context = {"request": request}
-        ).data
-        return Response(advertisements)
+        if request.GET["budget"]:
+            budget = request.GET["budget"]
+            advertisements = advertisements.filter(rental__lte=budget)
+
+        if request.GET["move_in"]:
+            move_in = request.GET["move_in"]
+
+            # Advanced two months move_in date to create search range
+            start_date = datetime.datetime.strptime(move_in, "%Y-%m-%d").date()
+            end_date = start_date + relativedelta(months=2)
+            advertisements = advertisements.filter(move_in__range=(start_date, end_date))
+
+        serializer = AdvertisementSerializer(advertisements, many=True, context = {"request": request})
+        return Response(serializer.data)
 
     """
         POST params:
