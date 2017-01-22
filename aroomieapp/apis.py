@@ -12,6 +12,9 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Q
 
+import datetime
+from dateutil.relativedelta import relativedelta
+
 from django.contrib.auth.models import User
 from aroomieapp.models import Profile, Advertisement, Rating, Message
 from aroomieapp.serializers import UserSerializer, ProfileSerializer, \
@@ -28,7 +31,7 @@ def user_get_profile(request):
 
     user = access_token.user
 
-    p = Profile.objects.get(user = user)
+    p = Profile.objects.get(user=user)
     age_min = p.age_min
     age_max = p.age_max
 
@@ -42,11 +45,11 @@ def user_get_profile(request):
         age_range == ""
 
     basic = UserSerializer(
-        User.objects.filter(id = user.id).last()
+        User.objects.filter(id=user.id).last()
     ).data
 
     profile = ProfileSerializer(
-        Profile.objects.filter(user = user).last()
+        Profile.objects.filter(user=user).last()
     ).data
 
     return JsonResponse({"basic": basic, "profile": profile, "age_range": age_range})
@@ -71,7 +74,7 @@ def user_update_profile(request):
 
         user = access_token.user
 
-        profile = Profile.objects.get(user = user)
+        profile = Profile.objects.get(user=user)
 
         if request.POST["race"]:
             profile.race = request.POST["race"]
@@ -100,14 +103,14 @@ def user_update_profile(request):
 
 def user_get_other_profile(request, user_id):
     basic = UserSerializer(
-        User.objects.filter(id = user_id).last()
+        User.objects.filter(id=user_id).last()
     ).data
 
     profile = OtherProfileSerializer(
-        Profile.objects.filter(user_id = user_id).last()
+        Profile.objects.filter(user_id=user_id).last()
     ).data
 
-    p = Profile.objects.filter(user_id = user_id).last()
+    p = Profile.objects.filter(user_id=user_id).last()
     age_min = p.age_min
     age_max = p.age_max
 
@@ -126,28 +129,53 @@ def user_get_other_profile(request, user_id):
 # ADVERTISEMENT - Trying Class-based Views
 ###############
 
-"""
-    POST params:
-        access_token
-        rental
-        move_in
-        deposit
-        amenity
-        rule
-        lat
-        lng
-        gender_pref
-        race_pref
-        photo
-"""
 class AdvertisementList(APIView):
-    serializer_class = AdvertisementSerializer
 
+    """
+        GET params:
+            gender_pref
+            race_pref
+            budget
+            move_in
+    """
     def get(self, request, format=None):
-        advertisements = Advertisement.objects.all().order_by('-id')
-        serializer = AdvertisementSerializer(advertisements, many=True, context = {"request": request})
-        return Response(serializer.data)
 
+        # Request.GET data
+        gender_pref = request.GET["gender_pref"]
+        race_pref = request.GET["race_pref"]
+        budget = request.GET["budget"]
+        move_in = request.GET["move_in"]
+
+        # Advanced two months move_in date to create search range
+        start_date = datetime.datetime.strptime(move_in, "%Y-%m-%d").date()
+        end_date = start_date + relativedelta(months=2)
+
+        advertisements = AdvertisementSerializer(
+            Advertisement.objects.filter(
+                gender_pref=gender_pref,
+                race_pref=race_pref,
+                rental__lte=budget,
+                move_in__range=(start_date, end_date)
+            ),
+            many=True,
+            context = {"request": request}
+        ).data
+        return Response(advertisements)
+
+    """
+        POST params:
+            access_token
+            rental
+            move_in
+            deposit
+            amenity
+            rule
+            lat
+            lng
+            gender_pref
+            race_pref
+            photo
+    """
     def post(self, request, format=None):
         serializer = AdvertisementSerializer(data=request.data)
 
@@ -182,11 +210,11 @@ class AdvertisementDetail(APIView):
 
 ###############
 # RATING
-#############
+###############
 
 def user_get_rating(request, user_id):
 
-    ratings = Rating.objects.filter(rated_to = user_id)
+    ratings = Rating.objects.filter(rated_to=user_id)
     count = ratings.count()
     if count > 0:
         score = sum(rating.score for rating in ratings) / count
@@ -199,11 +227,12 @@ def user_rating_check(request, user_id):
         expires__gt = timezone.now())
 
     user = access_token.user
-    ratings = Rating.objects.filter(rated_by = user, rated_to = user_id)
+    ratings = Rating.objects.filter(rated_by=user, rated_to=user_id)
     if ratings.count() > 0:
         return JsonResponse({"rated": "true"})
     else:
         return JsonResponse({"rated": "false"})
+
 """
     POST params:
         access_token
@@ -217,10 +246,10 @@ def user_add_rating(request, user_id):
             expires__gt = timezone.now())
 
         rated_by = access_token.user
-        rated_to = User.objects.filter(id = user_id).last()
+        rated_to = User.objects.filter(id=user_id).last()
 
         # Check if target has been rated before
-        if Rating.objects.filter(rated_to = rated_to, rated_by = rated_by):
+        if Rating.objects.filter(rated_to=rated_to, rated_by=rated_by):
             return JsonResponse({"status": "failed", "error": "You have already rated this user before"})
 
         rating = Rating.objects.create(
@@ -232,27 +261,9 @@ def user_add_rating(request, user_id):
 
         return JsonResponse({"status": "success"})
 
-
 ###############
 # MESSAGE
 ###############
-
-# def user_get_message_list(request):
-#     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
-#         expires__gt = timezone.now())
-#
-#     user = access_token.user
-#
-#     message_list = MessageSerializer(
-#         Message.objects.filter(Q(sent_by = user) | Q(sent_to = user)).order_by('sent_at'),
-#         many = True
-#     ).data
-#
-#     for message in message_list:
-#         message["sent_by"] = User.objects.filter(id = message["sent_by"]).last().get_full_name()
-#         message["sent_to"] = User.objects.filter(id = message["sent_to"]).last().get_full_name()
-#
-#     return JsonResponse({"message_list": message_list})
 
 def user_get_message_list(request):
     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
@@ -261,7 +272,7 @@ def user_get_message_list(request):
     user = access_token.user
 
     # TODO: get the unique senders order_by timestamp
-    unique_senders = Message.objects.filter(sent_to = user).values('sent_by', 'sent_to').distinct()
+    unique_senders = Message.objects.filter(sent_to=user).values('sent_by', 'sent_to').distinct()
 
     message_list = []
     for id in unique_senders:
@@ -270,18 +281,21 @@ def user_get_message_list(request):
 
         # Get the latest content for each of the messages
         latest = MessageSerializer(
-            Message.objects.filter(Q(sent_by = sent_to, sent_to = sent_by) | Q(sent_by = sent_by, sent_to = sent_to)).order_by('sent_at').last()
+            Message.objects.filter(
+                Q(sent_by=sent_to, sent_to=sent_by) |
+                Q(sent_by=sent_by, sent_to=sent_to)
+            ).order_by('sent_at').last()
         ).data
 
         # Replace content with last chat and append the message into messsage_list
         message = MessageSerializer(
-            Message.objects.filter(sent_to = user, sent_by = sent_by).order_by('sent_at').last()
+            Message.objects.filter(sent_to=user, sent_by=sent_by).order_by('sent_at').last()
         ).data
         message["content"] = latest["content"]
         message_list.append(message)
 
     for message in message_list:
-        message["sent_by_name"] = User.objects.filter(id = message["sent_by"]).last().get_full_name()
+        message["sent_by_name"] = User.objects.filter(id=message["sent_by"]).last().get_full_name()
 
     return JsonResponse({"messages_received": message_list})
 
@@ -290,10 +304,13 @@ def user_get_message_thread(request, user_id):
         expires__gt = timezone.now())
 
     user = access_token.user
-    other_user = User.objects.filter(id = user_id).last()
+    other_user = User.objects.filter(id=user_id).last()
 
     message = MessageSerializer(
-        Message.objects.filter(Q(sent_by = user, sent_to = other_user) | Q(sent_by = other_user, sent_to = user)).order_by('sent_at'),
+        Message.objects.filter(
+            Q(sent_by=user, sent_to=other_user) |
+            Q(sent_by=other_user, sent_to=user)
+        ).order_by('sent_at'),
         many = True
     ).data
 
@@ -312,7 +329,7 @@ def user_send_message(request, user_id):
             expires__gt = timezone.now())
 
         user = access_token.user
-        other_user = User.objects.filter(id = user_id).last()
+        other_user = User.objects.filter(id=user_id).last()
 
         Message.objects.create(
             content = request.POST["content"],
