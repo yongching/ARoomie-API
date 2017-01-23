@@ -226,6 +226,11 @@ class AdvertisementDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, pk, format=None):
+        advertisement = self.get_object(pk)
+        advertisement.delete()
+        return Response(status=status.HTTP_200_OK)
+
 ###############
 # RATING
 ###############

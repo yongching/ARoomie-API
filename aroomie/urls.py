@@ -41,6 +41,7 @@ urlpatterns = [
     url(r'^api/advertisement/add/$', AdvertisementList.as_view()),
     url(r'^api/advertisement/(?P<pk>[0-9]+)/$', AdvertisementDetail.as_view()),
     url(r'^api/advertisement/edit/(?P<pk>[0-9]+)/$', AdvertisementDetail.as_view()),
+    url(r'^api/advertisement/delete/(?P<pk>[0-9]+)/$', AdvertisementDetail.as_view()),
 
     # RATING
     url(r'^api/rating/(?P<user_id>\d+)/$', apis.user_get_rating),
