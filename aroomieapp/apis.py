@@ -26,7 +26,7 @@ from aroomieapp.serializers import UserSerializer, ProfileSerializer, \
 ##############
 
 def user_get_profile(request):
-    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+    access_token = AccessToken.objects.get(token=request.GET.get("access_token"),
         expires__gt = timezone.now())
 
     user = access_token.user
@@ -69,7 +69,7 @@ def user_get_profile(request):
 def user_update_profile(request):
 
     if request.method == "POST":
-        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+        access_token = AccessToken.objects.get(token=request.POST.get("access_token"),
             expires__gt = timezone.now())
 
         user = access_token.user
@@ -129,6 +129,19 @@ def user_get_other_profile(request, user_id):
 # ADVERTISEMENT - Trying Class-based Views
 ###############
 
+class UserAdvertisement(APIView):
+    def get(self, request, format=None):
+
+        access_token = AccessToken.objects.get(token=request.GET.get("access_token"),
+            expires__gt = timezone.now())
+
+        user = access_token.user
+
+        advertisements = Advertisement.objects.filter(created_by=user)
+
+        serializer = AdvertisementSerializer(advertisements, many=True, context={"request": request})
+        return Response(serializer.data)
+
 class AdvertisementList(APIView):
     serializer_class = AdvertisementSerializer
 
@@ -139,7 +152,6 @@ class AdvertisementList(APIView):
             budget
             move_in
     """
-
     def get(self, request, format=None):
 
         advertisements = Advertisement.objects.all()
@@ -165,7 +177,7 @@ class AdvertisementList(APIView):
             end_date = start_date + relativedelta(months=2)
             advertisements = advertisements.filter(move_in__range=(start_date, end_date))
 
-        serializer = AdvertisementSerializer(advertisements, many=True, context = {"request": request})
+        serializer = AdvertisementSerializer(advertisements, many=True, context={"request": request})
         return Response(serializer.data)
 
     """
@@ -186,7 +198,7 @@ class AdvertisementList(APIView):
         serializer = AdvertisementSerializer(data=request.data)
 
         if serializer.is_valid():
-            access_token = AccessToken.objects.get(token = request.data["access_token"],
+            access_token = AccessToken.objects.get(token=request.data["access_token"],
                 expires__gt = timezone.now())
 
             user = access_token.user
@@ -203,7 +215,7 @@ class AdvertisementDetail(APIView):
 
     def get(self, request, pk, format=None):
         advertisement = Advertisement.objects.filter(id=pk).last()
-        serializer = AdvertisementSerializer(advertisement, context = {"request": request})
+        serializer = AdvertisementSerializer(advertisement, context={"request": request})
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
@@ -229,7 +241,7 @@ def user_get_rating(request, user_id):
         return JsonResponse({"score": 0})
 
 def user_rating_check(request, user_id):
-    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+    access_token = AccessToken.objects.get(token=request.GET.get("access_token"),
         expires__gt = timezone.now())
 
     user = access_token.user
@@ -248,7 +260,7 @@ def user_rating_check(request, user_id):
 def user_add_rating(request, user_id):
 
     if request.method == "POST":
-        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+        access_token = AccessToken.objects.get(token=request.POST.get("access_token"),
             expires__gt = timezone.now())
 
         rated_by = access_token.user
@@ -272,7 +284,7 @@ def user_add_rating(request, user_id):
 ###############
 
 def user_get_message_list(request):
-    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+    access_token = AccessToken.objects.get(token=request.GET.get("access_token"),
         expires__gt = timezone.now())
 
     user = access_token.user
@@ -306,7 +318,7 @@ def user_get_message_list(request):
     return JsonResponse({"messages_received": message_list})
 
 def user_get_message_thread(request, user_id):
-    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+    access_token = AccessToken.objects.get(token=request.GET.get("access_token"),
         expires__gt = timezone.now())
 
     user = access_token.user
@@ -331,7 +343,7 @@ def user_get_message_thread(request, user_id):
 def user_send_message(request, user_id):
 
     if request.method == "POST":
-        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+        access_token = AccessToken.objects.get(token=request.POST.get("access_token"),
             expires__gt = timezone.now())
 
         user = access_token.user
