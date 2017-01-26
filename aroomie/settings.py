@@ -178,6 +178,6 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 # Push notification
-PUSH_NOTIFICATIONS_SETTINGS = {
-    "APNS_CERTIFICATE": os.path.join(BASE_DIR, 'aroomieapp/certificate.pem'),
-}
+# PUSH_NOTIFICATIONS_SETTINGS = {
+#     "APNS_CERTIFICATE": os.path.join(BASE_DIR, 'aroomieapp/certificate.pem'),
+# }
