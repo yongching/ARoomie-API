@@ -140,12 +140,6 @@ def user_update_device_token(request):
             profile.device_token = request.POST["device_token"]
             profile.save()
 
-        apns_token = request.POST["device_token"]
-        device = APNSDevice.objects.get(registration_id=apns_token)
-        device.send_message("You've got mail") # Alert message may only be sent as text.
-        device.send_message(None, badge=5) # No alerts but with badge.
-        device.send_message(None, badge=1, extra={"foo": "bar"}) # Silent message with badge and added custom data.
-
         return JsonResponse({"status": "success"})
 
 ###############
@@ -221,11 +215,48 @@ class AdvertisementList(APIView):
         serializer = AdvertisementSerializer(data=request.data)
 
         if serializer.is_valid():
+
+            # Save new advertisement
             access_token = AccessToken.objects.get(token=request.data["access_token"],
                 expires__gt = timezone.now())
-
             user = access_token.user
             serializer.save(created_by=user)
+
+            # Send notification for matched users
+            profiles = Profile.objects.all()
+
+            if request.POST["gender_pref"]:
+                gender_pref = request.POST["gender_pref"]
+                profiles = profiles.filter(gender_pref=gender_pref)
+
+            if request.POST["race_pref"]:
+                race_pref = request.POST["race_pref"]
+                profiles = profiles.filter(race_pref=race_pref)
+
+            if request.POST["rental"]:
+                rental = request.POST["rental"]
+                profiles = profiles.filter(budget_pref__lte=rental)
+
+            if request.POST["move_in"]:
+                move_in = request.POST["move_in"]
+
+                # Advanced two months move_in date to create search range
+                start_date = datetime.datetime.strptime(move_in, "%Y-%m-%d").date()
+                end_date = start_date + relativedelta(months=2)
+                profiles = profiles.filter(move_in_pref__range=(start_date, end_date))
+
+            if len(profiles) > 0:
+                for profile in profiles:
+                    profile = ProfileSerializer(profile).data
+
+                    apns_token = profile["device_token"]
+                    device = APNSDevice.objects.get(registration_id=apns_token)
+                    alert = {
+                        "title": "Potential Room Found!" ,
+                        "body": "View the advertisement now.",
+                    }
+                    device.send_message(alert, badge=0, sound="default", extra={"advertisementId": serializer.data["id"]})
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

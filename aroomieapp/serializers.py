@@ -13,7 +13,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ("id", "age_min", "age_max", "gender", "race", "phone", "avatar", "lifestyle_info",
-            "gender_pref", "race_pref", "budget_pref", "move_in_pref")
+            "gender_pref", "race_pref", "budget_pref", "move_in_pref", "device_token")
 
 class OtherProfileSerializer(serializers.ModelSerializer):
 
