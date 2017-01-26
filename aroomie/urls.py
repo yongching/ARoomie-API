@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^api/user/profile/$', apis.user_get_profile),
     url(r'^api/user/profile/edit/$', apis.user_update_profile),
     url(r'^api/user/profile/other/(?P<user_id>\d+)/$', apis.user_get_other_profile),
+    url(r'^api/user/device-token/$', apis.user_update_device_token),
 
     # ADVERTISEMENT
     url(r'^api/advertisements/self/$', UserAdvertisement.as_view()),

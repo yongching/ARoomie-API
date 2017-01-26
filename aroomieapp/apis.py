@@ -125,6 +125,21 @@ def user_get_other_profile(request, user_id):
 
     return JsonResponse({"basic": basic, "profile": profile, "age_range": age_range})
 
+@csrf_exempt
+def user_update_device_token(request):
+
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token=request.POST.get("access_token"),
+            expires__gt = timezone.now())
+
+        user = access_token.user
+        profile = Profile.objects.get(user=user)
+        if request.POST["device_token"]:
+            profile.device_token = request.POST["device_token"]
+            profile.save()
+
+        return JsonResponse({"status": "success"})
+
 ###############
 # ADVERTISEMENT - Trying Class-based Views
 ###############
