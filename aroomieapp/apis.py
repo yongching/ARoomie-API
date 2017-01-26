@@ -244,7 +244,7 @@ class AdvertisementList(APIView):
 
             if request.POST["rental"]:
                 rental = request.POST["rental"]
-                profiles = profiles.filter(budget_pref__lte=rental)
+                profiles = profiles.filter(budget_pref__gte=rental)
 
             if request.POST["move_in"]:
                 move_in = request.POST["move_in"]
