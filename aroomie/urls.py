@@ -54,6 +54,6 @@ urlpatterns = [
     url(r'^api/message/send/(?P<user_id>\d+)/$', apis.user_send_message),
 
     # NOTIFICATION
-    url(r'^api/device/apns/$', apis.create_apns_device),
+    url(r'^api/device/apns/create/$', apis.create_apns_device),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
