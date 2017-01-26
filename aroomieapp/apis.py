@@ -21,7 +21,31 @@ from aroomieapp.serializers import UserSerializer, ProfileSerializer, \
     OtherProfileSerializer, AdvertisementSerializer, RatingSerializer, \
     MessageSerializer
 
-from push_notifications.models import APNSDevice, GCMDevice
+from push_notifications.models import APNSDevice
+
+###############
+# APNSDevice
+##############
+
+@csrf_exempt
+def create_apns_device(request):
+
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token=request.POST.get("access_token"),
+            expires__gt = timezone.now())
+        user = access_token.user
+
+        if request.POST["device_token"]:
+            apns_device = APNSDevice.objects.filter(user=user)
+            if len(apns_device) == 0:
+                APNSDevice.objects.create(name="device_token", active=True, user=user, registration_id=request.POST["device_token"])
+            else:
+                apns_device = APNSDevice.objects.get(user=user)
+                apns_device.registration_id = request.POST["device_token"]
+                apns_device.save()
+        return JsonResponse({"status": "success"})
+
+    return JsonResponse({"status": "fail"})
 
 ###############
 # PROFILE

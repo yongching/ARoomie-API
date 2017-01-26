@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
 
-    # Facebook
+    # FACEBOOK
     url(r'^api/social/', include('rest_framework_social_oauth2.urls')),
 
     # USER
@@ -53,5 +53,8 @@ urlpatterns = [
     url(r'^api/messages/$', apis.user_get_message_list),
     url(r'^api/message/(?P<user_id>\d+)/$', apis.user_get_message_thread),
     url(r'^api/message/send/(?P<user_id>\d+)/$', apis.user_send_message),
+
+    # NOTIFICATION
+    url(r'^api/device/apns/$', apis.create_apns_device),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
