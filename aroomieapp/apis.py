@@ -256,10 +256,7 @@ class AdvertisementList(APIView):
 
             if len(profiles) > 0:
                 for profile in profiles:
-                    profile = ProfileSerializer(profile).data
-
-                    apns_token = profile["device_token"]
-                    device = APNSDevice.objects.get(registration_id=apns_token)
+                    device = APNSDevice.objects.get(user=profile.user)
                     alert = {
                         "title": "Potential Room Found!" ,
                         "body": "View the advertisement now.",
