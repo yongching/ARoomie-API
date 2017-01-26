@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'social.apps.django_app.default',
     'rest_framework_social_oauth2',
+    "push_notifications"
 ]
 
 MIDDLEWARE = [
@@ -175,3 +176,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details',
 )
+
+# Push notification
+PUSH_NOTIFICATIONS_SETTINGS = {
+    "APNS_CERTIFICATE": os.path.join(BASE_DIR, 'aroomieapp/Certificates.p12'),    
+}

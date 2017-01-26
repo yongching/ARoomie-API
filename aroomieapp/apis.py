@@ -21,6 +21,8 @@ from aroomieapp.serializers import UserSerializer, ProfileSerializer, \
     OtherProfileSerializer, AdvertisementSerializer, RatingSerializer, \
     MessageSerializer
 
+from push_notifications.models import APNSDevice, GCMDevice
+
 ###############
 # PROFILE
 ##############
@@ -137,6 +139,12 @@ def user_update_device_token(request):
         if request.POST["device_token"]:
             profile.device_token = request.POST["device_token"]
             profile.save()
+
+        apns_token = request.POST["device_token"]
+        device = APNSDevice.objects.get(registration_id=apns_token)
+        device.send_message("You've got mail") # Alert message may only be sent as text.
+        device.send_message(None, badge=5) # No alerts but with badge.
+        device.send_message(None, badge=1, extra={"foo": "bar"}) # Silent message with badge and added custom data.
 
         return JsonResponse({"status": "success"})
 
