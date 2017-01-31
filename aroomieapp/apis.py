@@ -257,7 +257,7 @@ class AdvertisementList(APIView):
             if len(profiles) > 0:
                 for profile in profiles:
                     device = APNSDevice.objects.get(user=profile.user)
-                    if device:
+                    if device.exist():
                         alert = {
                             "title": "Potential Room Found!",
                             "body": "View the advertisement now.",
