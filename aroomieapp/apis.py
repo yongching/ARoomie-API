@@ -262,9 +262,7 @@ class AdvertisementList(APIView):
                         "body": "View the advertisement now.",
                     }
                     device.send_message(alert, badge=0, sound="default", extra={"advertisementId": serializer.data["id"]})
-
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AdvertisementDetail(APIView):
     def get_object(self, pk):
