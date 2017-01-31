@@ -257,12 +257,15 @@ class AdvertisementList(APIView):
             if len(profiles) > 0:
                 for profile in profiles:
                     device = APNSDevice.objects.get(user=profile.user)
-                    alert = {
-                        "title": "Potential Room Found!" ,
-                        "body": "View the advertisement now.",
-                    }
-                    device.send_message(alert, badge=0, sound="default", extra={"advertisementId": serializer.data["id"]})
+                    if device:
+                        alert = {
+                            "title": "Potential Room Found!",
+                            "body": "View the advertisement now.",
+                        }
+                        device.send_message(alert, badge=0, sound="default", extra={"advertisementId": serializer.data["id"]})
+
             return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AdvertisementDetail(APIView):
     def get_object(self, pk):
