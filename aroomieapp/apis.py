@@ -283,11 +283,9 @@ class AdvertisementDetail(APIView):
         serializer = AdvertisementSerializer(advertisement, context={"request": request}).data
 
         user = User.objects.filter(id=serializer["created_by"]).last()
-        name = user.first_name + " " + user.last_name
-        avatar = Profile.objects.filter(user=user).last().avatar
-
-        serializer["creator_name"] = name
-        serializer["creator_avatar"] = avatar
+        serializer["creator_name"] = user.first_name + " " + user.last_name
+        serializer["lifestyle_info"] = Profile.objects.filter(user=user).last().lifestyle_info
+        serializer["creator_avatar"] = Profile.objects.filter(user=user).last().avatar
 
         return Response(serializer)
 
