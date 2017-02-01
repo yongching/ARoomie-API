@@ -280,8 +280,16 @@ class AdvertisementDetail(APIView):
 
     def get(self, request, pk, format=None):
         advertisement = Advertisement.objects.filter(id=pk).last()
-        serializer = AdvertisementSerializer(advertisement, context={"request": request})
-        return Response(serializer.data)
+        serializer = AdvertisementSerializer(advertisement, context={"request": request}).data
+
+        user = User.objects.filter(id=serializer["created_by"]).last()
+        name = user.first_name + " " + user.last_name
+        avatar = Profile.objects.filter(user=user).last().avatar
+
+        serializer["creator_name"] = name
+        serializer["creator_avatar"] = avatar
+
+        return Response(serializer)
 
     def put(self, request, pk, format=None):
         advertisement = self.get_object(pk)
