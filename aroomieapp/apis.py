@@ -203,8 +203,13 @@ class AdvertisementList(APIView):
             end_date = start_date + relativedelta(months=2)
             advertisements = advertisements.filter(move_in__range=(start_date, end_date))
 
-        serializer = AdvertisementSerializer(advertisements, many=True, context={"request": request})
-        return Response(serializer.data)
+        serializer = AdvertisementSerializer(advertisements, many=True, context={"request": request}).data
+
+        # Get avatar urls
+        for advertisement in serializer:
+            advertisement["creator_avatar"] = Profile.objects.filter(user=advertisement["created_by"]).last().avatar
+
+        return Response(serializer)
 
     """
         POST params:
