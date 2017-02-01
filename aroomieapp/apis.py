@@ -378,7 +378,9 @@ def user_get_message_list(request):
         message_list.append(message)
 
     for message in message_list:
-        message["sent_by_name"] = User.objects.filter(id=message["sent_by"]).last().get_full_name()
+        user = User.objects.filter(id=message["sent_by"]).last()
+        message["sent_by_name"] = user.get_full_name()
+        message["sender_avatar"] = Profile.objects.filter(user=user).last().avatar
 
     return JsonResponse({"messages_received": message_list})
 
