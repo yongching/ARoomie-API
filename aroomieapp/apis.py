@@ -23,6 +23,10 @@ from aroomieapp.serializers import UserSerializer, ProfileSerializer, \
 
 from push_notifications.models import APNSDevice
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 ###############
 # APNSDevice
 ##############
@@ -230,10 +234,15 @@ class AdvertisementList(APIView):
 
         if serializer.is_valid():
 
-            # Save new advertisement
+            # upload photo to cloudinary
+            data = request.data
+            response = cloudinary.uploader.upload(request.data['photo'])
+
+            # Create new advertisement
             access_token = AccessToken.objects.get(token=request.data["access_token"],
                 expires__gt = timezone.now())
             user = access_token.user
+            serializer.validated_data['photo'] = response['secure_url']
             serializer.save(created_by=user)
 
             # Send notification for matched users
@@ -293,6 +302,10 @@ class AdvertisementDetail(APIView):
         advertisement = self.get_object(pk)
         serializer = AdvertisementSerializer(advertisement, data=request.data)
         if serializer.is_valid():
+            # upload photo to cloudinary
+            data = request.data
+            response = cloudinary.uploader.upload(request.data['photo'])
+            serializer.validated_data['photo'] = response['secure_url']
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

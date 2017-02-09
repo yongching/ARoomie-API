@@ -181,3 +181,13 @@ SOCIAL_AUTH_PIPELINE = (
 PUSH_NOTIFICATIONS_SETTINGS = {
     "APNS_CERTIFICATE": os.path.join(BASE_DIR, 'aroomieapp/certificate.pem'),
 }
+
+import cloudinary
+cloudinary.config(
+  cloud_name = "blizzard339",
+  api_key = os.environ['CLOUDINARY_KEY'],
+  api_secret = os.environ['CLOUDINARY_SECRET']
+)
+
+import urllib3
+urllib3.disable_warnings()

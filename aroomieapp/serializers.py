@@ -34,8 +34,10 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         fields = ("id", "place_name", "rental", "move_in", "deposit", "amenity", "rule",
             "lat", "lng", "gender_pref", "race_pref", "photo", "created_by")
 
+        """ before implement cloudinary
         def create(self, validated_data):
             return Advertisement.objects.create(**validated_data)
+        """
 
 class RatingSerializer(serializers.ModelSerializer):
 

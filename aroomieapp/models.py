@@ -34,7 +34,8 @@ class Advertisement(models.Model):
     lng = models.DecimalField(max_digits=9, decimal_places=6)
     gender_pref = models.IntegerField(choices=GENDER_CHOICES)
     race_pref = models.IntegerField(choices=RACE_CHOICES)
-    photo = models.ImageField(upload_to='advertisement/', blank=False)
+    #photo = models.ImageField(upload_to='advertisement/', blank=False)
+    photo = models.CharField(max_length=500, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(User, null=True, blank=True, related_name='advertisement')
 
