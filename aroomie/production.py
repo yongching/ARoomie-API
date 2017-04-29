@@ -2,4 +2,5 @@ from aroomie.settings import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['aroomie.herokuapp.com']
+APP_NAME = os.environ.get('APP_NAME', 'aroomie')
+ALLOWED_HOSTS = ['%s.herokuapp.com' % APP_NAME]
