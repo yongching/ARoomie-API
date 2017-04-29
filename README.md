@@ -21,3 +21,13 @@ Follow Facebook setup for Social Auth:
 When testing with curl, use the client_id and client_secret from the Django OAuth Toolkit Application you created in the Django admin. Use the username and password of a valid Django user.
 
     curl -X POST -d "client_id=<client_id>&client_secret=<client_secret>&grant_type=password&username=<user_name>&password=<password>" http://127.0.0.1:8000/api/social/token
+
+
+### Deploy to Heroku
+
+    heroku create <APPNAME>
+    heroku config:set APP_NAME=<APPNAME>
+    heroku config:set DJANGO_SETTINGS_MODULE=aroomie.production
+    
+    git push heroku master
+    heroku run python manage.py migrate
