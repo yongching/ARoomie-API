@@ -11,3 +11,4 @@ django-push-notifications==1.4.1
 cloudinary==1.6.0
 certifi==2017.1.23
 social-auth-app-django==1.1.0
+python-social-auth==0.3.6
