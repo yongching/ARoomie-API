@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'aroomieapp',
     'oauth2_provider',
+    'social_django',
     'social.apps.django_app.default',
     'rest_framework_social_oauth2',
     "push_notifications"
